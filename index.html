@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>BroadcastChannel API POC</title>
+		<link rel="stylesheet" href="styles.css" />
+	</head>
+	<body>
+		<div class="container">
+			<header>
+				<h1>Controller</h1>
+				<p class="subtitle">BroadcastChannel API - Inter-Tab Communication POC</p>
+			</header>
+
+			<section class="info-box">
+				<h3>What this POC demonstrates:</h3>
+				<ul>
+					<li>Launch multiple sessions from a controller</li>
+					<li>Inter-tab messaging WITHOUT cookies or localStorage</li>
+					<li>Real-time communication between all open sessions</li>
+					<li>Session tracking and management</li>
+				</ul>
+			</section>
+
+			<section class="controls">
+				<h2>Launch Sessions</h2>
+				<div class="form-group">
+					<label for="session-data">Session Data (optional):</label>
+					<input type="text" id="session-data" placeholder="e.g., any custom data" />
+				</div>
+				<button id="launch-btn" class="btn primary">Launch New Session</button>
+			</section>
+
+			<section class="broadcast-controls">
+				<h2>Broadcast to All Sessions</h2>
+				<div class="form-group">
+					<label for="broadcast-msg">Message:</label>
+					<input type="text" id="broadcast-msg" placeholder="Enter message to broadcast" />
+				</div>
+				<button id="broadcast-btn" class="btn secondary">Broadcast Message</button>
+				<button id="close-all-btn" class="btn danger">Close All Sessions</button>
+			</section>
+
+			<section class="sessions">
+				<h2>Active Sessions <span id="session-count">(0)</span></h2>
+				<div id="session-list" class="session-list">
+					<p class="empty-state">No active sessions. Launch a session to begin.</p>
+				</div>
+			</section>
+
+			<section class="log-section">
+				<h2>Communication Log</h2>
+				<div id="log-container" class="log-container"></div>
+			</section>
+		</div>
+
+		<script type="module" src="controller.js"></script>
+	</body>
+</html>
