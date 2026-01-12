@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Session</title>
+		<link rel="stylesheet" href="styles.css" />
+	</head>
+	<body class="session-theme">
+		<div class="container">
+			<header>
+				<h1>Session</h1>
+				<p class="subtitle" id="session-id-display">Loading...</p>
+			</header>
+
+			<section class="session-details">
+				<h2>Session Info</h2>
+				<div class="params-grid">
+					<div class="param-item">
+						<label>Session ID:</label>
+						<span id="display-session-id">-</span>
+					</div>
+
+					<div class="param-item">
+						<label>Data:</label>
+						<span id="display-data">-</span>
+					</div>
+
+					<div class="param-item">
+						<label>Status:</label>
+						<span id="display-status" class="status-badge">Connecting...</span>
+					</div>
+				</div>
+			</section>
+
+			<section class="controls">
+				<h2>Send Message to Controller</h2>
+
+				<div class="form-group">
+					<label for="message-input">Message:</label>
+					<input type="text" id="message-input" placeholder="Enter message to send" />
+				</div>
+
+				<button id="send-btn" class="btn primary">Send to Controller</button>
+			</section>
+
+			<section class="log-section">
+				<h2>Communication Log</h2>
+				<div id="log-container" class="log-container"></div>
+			</section>
+
+			<footer class="session-footer">
+				<button id="close-btn" class="btn danger">Close This Session</button>
+			</footer>
+		</div>
+
+		<script type="module" src="session.js"></script>
+	</body>
+</html>
