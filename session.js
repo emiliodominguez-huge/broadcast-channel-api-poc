@@ -169,6 +169,12 @@ channel.onmessage = (event) => {
 			updateStatus("Disconnected", false);
 			break;
 
+		case MESSAGE_TYPES.CONTROLLER_READY:
+			// Controller is back (e.g., after a refresh), re-register
+			log("Controller is ready. Re-registering session.", LOG_TYPES.INFO);
+			registerSession();
+			break;
+
 		// Messages from sibling sessions
 		case MESSAGE_TYPES.SESSION_REGISTERED:
 			if (msgData.sessionId !== sessionId) {

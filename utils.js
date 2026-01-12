@@ -22,6 +22,7 @@ export const CHANNEL_NAME = "poc-session-channel";
  */
 export const MESSAGE_TYPES = Object.freeze({
 	// Controller -> Sessions
+	CONTROLLER_READY: "controller-ready",
 	BROADCAST: "broadcast",
 	DIRECT_MESSAGE: "direct-message",
 	CLOSE_SESSION: "close-session",
@@ -137,6 +138,17 @@ export function createCloseSessionMessage(targetSession) {
 export function createCloseAllMessage() {
 	return {
 		...createBaseMessage(MESSAGE_TYPES.CLOSE_ALL),
+		source: "controller",
+	};
+}
+
+/**
+ * Creates a controller ready notification.
+ * @returns {object} Message object ready for postMessage
+ */
+export function createControllerReadyMessage() {
+	return {
+		...createBaseMessage(MESSAGE_TYPES.CONTROLLER_READY),
 		source: "controller",
 	};
 }

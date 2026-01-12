@@ -13,6 +13,7 @@ import {
 	createDirectMessage,
 	createCloseSessionMessage,
 	createCloseAllMessage,
+	createControllerReadyMessage,
 	createControllerClosingMessage,
 } from "./utils.js";
 
@@ -216,4 +217,6 @@ window.addEventListener("beforeunload", () => {
 // Initialize
 // ----------------------------------------------------------------------------
 
+// Notify any existing sessions that controller is ready
+channel.postMessage(createControllerReadyMessage());
 log("Controller initialized. BroadcastChannel is active.", LOG_TYPES.INFO);
