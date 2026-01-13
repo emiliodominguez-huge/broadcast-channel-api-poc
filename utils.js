@@ -8,7 +8,7 @@
 // Constants
 // ----------------------------------------------------------------------------
 
-/** The channel name used for communication. Must be identical across all tabs. */
+/** @type {string} The channel name used for communication. Must be identical across all tabs. */
 export const CHANNEL_NAME = "poc-session-channel";
 
 /**
@@ -45,9 +45,14 @@ export const LOG_TYPES = Object.freeze({
 /**
  * Creates a log function bound to a specific container element.
  * @param {HTMLElement} container - The DOM element to append log entries to
- * @returns {function(string, string): void} A log function
+ * @returns {function(string, string): void} A logging function that accepts a message and optional type
  */
 export function createLogger(container) {
+	/**
+	 * Logs a message to the UI container.
+	 * @param {string} message - The message to display
+	 * @param {string} [type='info'] - The log entry type for styling
+	 */
 	return function log(message, type = LOG_TYPES.INFO) {
 		const entry = document.createElement("div");
 		entry.className = `log-entry ${type}`;
@@ -60,6 +65,11 @@ export function createLogger(container) {
 // Message Factory Functions
 // ----------------------------------------------------------------------------
 
+/**
+ * Creates a base message object with common fields.
+ * @param {string} type - The message type from MESSAGE_TYPES
+ * @returns {{type: string, timestamp: number}} Base message object
+ */
 function createBaseMessage(type) {
 	return {
 		type,
@@ -71,6 +81,7 @@ function createBaseMessage(type) {
  * Creates a hash query message to check if a hash is already claimed.
  * @param {string} hash - The hash being queried
  * @param {string} queryId - Unique ID for this query (to match responses)
+ * @returns {{type: string, timestamp: number, hash: string, queryId: string}} Hash query message
  */
 export function createHashQueryMessage(hash, queryId) {
 	return {
@@ -85,6 +96,7 @@ export function createHashQueryMessage(hash, queryId) {
  * @param {string} hash - The hash being claimed
  * @param {string} queryId - The query ID being responded to
  * @param {string} sessionId - The session claiming the hash
+ * @returns {{type: string, timestamp: number, hash: string, queryId: string, sessionId: string}} Hash claim message
  */
 export function createHashClaimMessage(hash, queryId, sessionId) {
 	return {
@@ -99,6 +111,7 @@ export function createHashClaimMessage(hash, queryId, sessionId) {
  * Creates a session registration message.
  * @param {string} sessionId - The session's unique ID
  * @param {string} [hash=''] - The session hash
+ * @returns {{type: string, timestamp: number, sessionId: string, hash: string}} Session registered message
  */
 export function createSessionRegisteredMessage(sessionId, hash = "") {
 	return {
@@ -111,6 +124,7 @@ export function createSessionRegisteredMessage(sessionId, hash = "") {
 /**
  * Creates a session closed notification.
  * @param {string} sessionId - The session's unique ID
+ * @returns {{type: string, timestamp: number, sessionId: string}} Session closed message
  */
 export function createSessionClosedMessage(sessionId) {
 	return {
