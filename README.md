@@ -1,46 +1,55 @@
 # BroadcastChannel API POC
 
-Inter-tab communication without cookies or localStorage.
+Duplicate session detection using the BroadcastChannel API.
 
 ## Quick Start
 
 ```bash
-# Start a local server (pick one)
+# Start a local server
 npx serve .
 # or
 python3 -m http.server 3000
-
-# Open http://localhost:3000 (or :8000 for Python)
 ```
+
+Then open these URLs to test:
+
+1. `http://localhost:3000?hash=test-123` - First session opens normally
+2. `http://localhost:3000?hash=test-123` - Second session auto-closes (duplicate)
+3. `http://localhost:3000?hash=test-456` - Different hash, opens normally
 
 > ES modules require a server. Opening HTML files directly (`file://`) won't work.
 
 ---
 
-## What is BroadcastChannel?
+## How It Works
 
-A browser API for real-time communication between tabs/windows on the **same origin**.
+Sessions coordinate peer-to-peer via BroadcastChannel to prevent duplicates:
 
-```javascript
-// Create or join a channel
-const channel = new BroadcastChannel("my-channel");
+1. **New session opens** with a `hash` query parameter
+2. **Broadcasts query**: "Does anyone have this hash?"
+3. **Existing session responds** with a claim if it owns that hash
+4. **New session closes itself** if a claim is received
+5. **Otherwise registers** as the owner of that hash
 
-// Send to all subscribers
-channel.postMessage({ type: "hello", data: "world" });
-
-// Receive messages
-channel.onmessage = (event) => console.log(event.data);
-
-// Disconnect
-channel.close();
 ```
-
-### Key Points
-
-- Works within a **single browser** (not across users/machines)
-- Same-origin only (same protocol + domain + port)
-- No persistent storage - data stays in memory
-- Automatic cleanup when tabs close
+┌──────────────────┐         ┌──────────────────┐
+│  New Session     │         │ Existing Session │
+│  ?hash=abc123    │         │  ?hash=abc123    │
+└────────┬─────────┘         └────────┬─────────┘
+         │                            │
+         │  SESSION_HASH_QUERY        │
+         │  "Who has abc123?"         │
+         │ ─────────────────────────► │
+         │                            │
+         │  SESSION_HASH_CLAIM        │
+         │  "I have abc123"           │
+         │ ◄───────────────────────── │
+         │                            │
+         │                            │
+    ┌────┴────┐                       │
+    │  CLOSE  │                       │
+    └─────────┘                       │
+```
 
 ---
 
@@ -48,72 +57,33 @@ channel.close();
 
 ```
 broadcast-channel-api-poc/
-├── index.html      # Controller page
-├── session.html    # Child session page
-├── controller.js   # Controller logic
-├── session.js      # Session logic
-├── utils.js        # Shared utilities
-├── styles.css      # Styling
+├── index.html    # Session page
+├── main.js       # Session logic with duplicate detection
+├── utils.js      # Shared constants and message factories
+├── styles.css    # Styling
 └── README.md
-```
-
----
-
-## How It Works
-
-### 1. Controller launches sessions
-
-```javascript
-window.open(`session.html?sessionId=Session-1&data=custom`, "_blank");
-```
-
-### 2. Session registers with controller
-
-```javascript
-channel.postMessage({
-	type: "session-registered",
-	sessionId: "Session-1",
-	data: "custom",
-});
-```
-
-### 3. Two-way communication
-
-- **Broadcast**: Controller sends to all sessions
-- **Direct**: Controller targets a specific session (filtered by `targetSession`)
-- **Reply**: Sessions send messages back to controller
-
-### 4. Cleanup on close
-
-```javascript
-window.addEventListener("beforeunload", () => {
-	channel.postMessage({ type: "session-closed", sessionId });
-	channel.close();
-});
 ```
 
 ---
 
 ## Message Types
 
-### Controller → Sessions
+| Type                 | Direction | Description                          |
+| -------------------- | --------- | ------------------------------------ |
+| `session-hash-query` | Broadcast | New session asking who owns a hash   |
+| `session-hash-claim` | Response  | Existing session claiming ownership  |
+| `session-registered` | Broadcast | Session announcing it's active       |
+| `session-closed`     | Broadcast | Session announcing it's closing      |
 
-| Type                 | Description              |
-| -------------------- | ------------------------ |
-| `broadcast`          | Message to all sessions  |
-| `direct-message`     | Message to one session   |
-| `close-session`      | Request session to close |
-| `close-all`          | Close all sessions       |
-| `controller-closing` | Controller is closing    |
+---
 
-### Sessions → Controller
+## Configuration
 
-| Type                | Description               |
-| ------------------- | ------------------------- |
-| `session-registered`| Session announcing itself |
-| `session-closed`    | Session is closing        |
-| `session-message`   | Message from session      |
-| `session-ping`      | Heartbeat (optional)      |
+In `main.js`:
+
+```javascript
+const DUPLICATE_CHECK_TIMEOUT = 300; // ms to wait for responses
+```
 
 ---
 
@@ -126,20 +96,8 @@ window.addEventListener("beforeunload", () => {
 | Edge    | 79+     |
 | Safari  | 15.4+   |
 
-Baseline support across all major browsers since March 2022.
-
----
-
-## Limitations
-
-1. **Single browser only** - Cannot communicate across users/machines
-2. **Same-origin only** - Different domains can't communicate
-3. **No persistence** - Messages are ephemeral
-4. **No ordering guarantee** - Usually preserved, but not guaranteed
-
 ---
 
 ## References
 
 - [MDN: BroadcastChannel API](https://developer.mozilla.org/en-US/docs/Web/API/Broadcast_Channel_API)
-- [Structured Clone Algorithm](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Structured_clone_algorithm)

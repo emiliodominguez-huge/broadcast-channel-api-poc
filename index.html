@@ -3,58 +3,55 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>BroadcastChannel API POC</title>
+		<title>Session</title>
 		<link rel="stylesheet" href="styles.css" />
 	</head>
 	<body>
 		<div class="container">
 			<header>
-				<h1>Controller</h1>
-				<p class="subtitle">BroadcastChannel API - Inter-Tab Communication POC</p>
+				<h1>Session</h1>
+				<p class="subtitle" id="session-id-display">Loading...</p>
 			</header>
 
-			<section class="info-box">
-				<h3>What this POC demonstrates:</h3>
-				<ul>
-					<li>Launch multiple sessions from a controller</li>
-					<li>Inter-tab messaging WITHOUT cookies or localStorage</li>
-					<li>Real-time communication between all open sessions</li>
-					<li>Session tracking and management</li>
-				</ul>
+			<section class="instructions">
+				<h2>Try It</h2>
+				<ol>
+					<li>Open <a href="?hash=test-123" target="_blank">?hash=test-123</a> - session opens normally</li>
+					<li>Open <a href="?hash=test-123" target="_blank">?hash=test-123</a> again - duplicate auto-closes</li>
+					<li>Open <a href="?hash=test-456" target="_blank">?hash=test-456</a> - different hash, opens normally</li>
+				</ol>
 			</section>
 
-			<section class="controls">
-				<h2>Launch Sessions</h2>
-				<div class="form-group">
-					<label for="session-data">Session Data (optional):</label>
-					<input type="text" id="session-data" placeholder="e.g., any custom data" />
-				</div>
-				<button id="launch-btn" class="btn primary">Launch New Session</button>
-			</section>
+			<section class="session-details">
+				<h2>Session Info</h2>
+				<div class="params-grid">
+					<div class="param-item">
+						<label>Session ID:</label>
+						<span id="display-session-id">-</span>
+					</div>
 
-			<section class="broadcast-controls">
-				<h2>Broadcast to All Sessions</h2>
-				<div class="form-group">
-					<label for="broadcast-msg">Message:</label>
-					<input type="text" id="broadcast-msg" placeholder="Enter message to broadcast" />
-				</div>
-				<button id="broadcast-btn" class="btn secondary">Broadcast Message</button>
-				<button id="close-all-btn" class="btn danger">Close All Sessions</button>
-			</section>
+					<div class="param-item">
+						<label>Hash:</label>
+						<span id="display-hash">-</span>
+					</div>
 
-			<section class="sessions">
-				<h2>Active Sessions <span id="session-count">(0)</span></h2>
-				<div id="session-list" class="session-list">
-					<p class="empty-state">No active sessions. Launch a session to begin.</p>
+					<div class="param-item">
+						<label>Status:</label>
+						<span id="display-status" class="status-badge">Connecting...</span>
+					</div>
 				</div>
 			</section>
 
 			<section class="log-section">
-				<h2>Communication Log</h2>
+				<h2>Activity Log</h2>
 				<div id="log-container" class="log-container"></div>
 			</section>
+
+			<footer class="session-footer">
+				<button id="close-btn" class="btn danger">Close This Session</button>
+			</footer>
 		</div>
 
-		<script type="module" src="controller.js"></script>
+		<script type="module" src="main.js"></script>
 	</body>
 </html>
